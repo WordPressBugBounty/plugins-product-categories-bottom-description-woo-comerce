@@ -1,0 +1,1 @@
+# plugins-product-categories-bottom-description-woo-comerce
