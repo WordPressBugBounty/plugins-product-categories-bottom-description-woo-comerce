@@ -31,7 +31,7 @@ function pcbdw_product_cat_custom_fields( $term, $taxonomy ) {
     </tr>
     <?php
 
-    $display_position = get_term_meta($term->term_id, PCBDW_META_PREFIX . 'display_position', true);
+    $display_position = get_term_meta($term->term_id, 'woo_bottom_description_display_position', true);
     if ( !$display_position ) {
         $display_position = 'woocommerce_after_shop_loop';
     }
@@ -65,7 +65,7 @@ function pcbdw_product_cat_custom_fields( $term, $taxonomy ) {
     </tr>
     <?php
 
-    $display_option = get_term_meta($term->term_id, PCBDW_META_PREFIX . 'display_option', true);
+    $display_option = get_term_meta($term->term_id, 'woo_bottom_description_display_option', true);
     ?>
     <tr class="form-field">
         <th scope="row" valign="top"><label for="display_option">Hide bottom description</label></th>
