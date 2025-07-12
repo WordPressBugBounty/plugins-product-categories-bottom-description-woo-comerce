@@ -5,7 +5,7 @@ Plugin URI: https://wordpress.org/plugins/product-categories-bottom-description-
 Description: Add a new content field to the bottom of your WooCommerce product categories, right after the products list. Improve your SEO and UX.
 Author: Diego de Guindos
 Author URI: https://diegoguindos.com
-Version: 3.2.1
+Version: 3.3.0
 License: GPL2
 */
 
