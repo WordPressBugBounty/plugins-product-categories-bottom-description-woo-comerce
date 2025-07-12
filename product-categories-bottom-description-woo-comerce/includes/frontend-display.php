@@ -24,6 +24,7 @@ add_action('woocommerce_before_main_content', function () {
 
 }, 5);
 
+
 /**
  * Render the custom bottom description for product categories.
  * Only displays if the "display description" option is enabled and content exists.
@@ -45,3 +46,51 @@ function pcbdw_product_cat_display_details_meta()
         }
     }
 }
+
+
+/**
+ * Output custom CSS styles in the frontend based on saved plugin options.
+ */
+add_action('wp_enqueue_scripts', function () {
+    if (!is_tax('product_cat')) return;
+
+    wp_enqueue_style('pcbdw-custom-style', plugins_url('../assets/css/style.css', __FILE__));
+
+    $sides = ['top', 'right', 'bottom', 'left'];
+    $css = '';
+
+    foreach (['margin', 'padding'] as $type) {
+        $values = [];
+        foreach ($sides as $side) {
+            $val = get_option("pcbdw_{$type}_{$side}_value", '');
+            $unit = get_option("pcbdw_{$type}_{$side}_unit", 'px');
+            $values[] = $val !== '' ? "{$val}{$unit}" : '0';
+        }
+        $css .= "{$type}: " . implode(' ', $values) . "; ";
+    }
+
+    $max_width_val = get_option('pcbdw_max_width_value', '');
+    $max_width_unit = get_option('pcbdw_max_width_unit', 'px');
+    if ($max_width_val !== '') {
+        $css .= "max-width: {$max_width_val}{$max_width_unit}; ";
+    }
+
+    $bg_color = get_option('pcbdw_background_color', '#ffffff');
+    $css .= "background-color: {$bg_color}; ";
+
+    $border_width = get_option('pcbdw_border_width', '');
+    $border_color = get_option('pcbdw_border_color', '#000000');
+    if ($border_width !== '') {
+        $css .= "border: {$border_width}px solid {$border_color}; ";
+    }
+
+    $radius_val = get_option('pcbdw_border_radius_value', '');
+    $radius_unit = get_option('pcbdw_border_radius_unit', 'px');
+    if ($radius_val !== '') {
+        $css .= "border-radius: {$radius_val}{$radius_unit}; ";
+    }
+
+    $final_css = ".pcbdw-bottom-description-content { {$css} }";
+
+    wp_add_inline_style('pcbdw-custom-style', $final_css);
+});
