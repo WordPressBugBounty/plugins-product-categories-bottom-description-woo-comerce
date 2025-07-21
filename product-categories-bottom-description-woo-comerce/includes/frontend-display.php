@@ -7,7 +7,7 @@
  */
 add_action('woocommerce_before_main_content', function () {
 
-    if (!is_tax('product_cat') || is_paged()) {
+    if (!is_tax() || is_paged()) {
         return;
     }
 
