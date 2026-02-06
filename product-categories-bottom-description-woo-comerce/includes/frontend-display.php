@@ -54,7 +54,8 @@ function pcbdw_product_cat_display_details_meta()
 add_action('wp_enqueue_scripts', function () {
     if (!is_tax('product_cat')) return;
 
-    wp_enqueue_style('pcbdw-custom-style', plugins_url('../assets/css/style.css', __FILE__));
+    wp_enqueue_style('pcbdw-custom-style', plugins_url('../assets/css/style.css', __FILE__), [], false, 'all');
+
 
     $sides = ['top', 'right', 'bottom', 'left'];
     $css = '';

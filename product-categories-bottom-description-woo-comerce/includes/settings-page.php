@@ -6,8 +6,8 @@
 add_action('admin_menu', function () {
     add_submenu_page(
         'woocommerce',
-        'Bottom Description Settings',
-        'Bottom Description',
+        __( 'Bottom Description Settings', 'pcbdw' ),
+        __( 'Bottom Description', 'pcbdw' ),
         'manage_options',
         'pcbdw-settings',
         'pcbdw_render_settings_page'
@@ -54,19 +54,19 @@ function pcbdw_render_settings_page()
     $units = ['px', 'em', 'rem', '%'];
     ?>
     <div class="wrap">
-        <h1>Bottom Description Settings</h1>
+        <h1><?php esc_html_e( 'Bottom Description Settings', 'pcbdw' ); ?></h1>
         <form method="post" action="options.php">
             <?php settings_fields('pcbdw_settings_group'); ?>
             <table class="form-table">
                 <?php foreach ($fields as $type => $sides): ?>
-                    <tr><th colspan="2"><h2 style="margin:0;"><?php echo ucfirst($type); ?></h2></th></tr>
+                    <tr><th colspan="2"><h2 style="margin:0;"><?php echo esc_html( ucfirst( translate( $type, 'pcbdw' ) ) ); ?></h2></th></tr>
                     <?php foreach ($sides as $side): 
                         $key = "pcbdw_{$type}_" . strtolower($side);
                         $val = get_option($key . '_value', '');
                         $unit = get_option($key . '_unit', 'px');
                     ?>
                         <tr>
-                            <th scope="row"><?php echo ucfirst("{$type} {$side}"); ?></th>
+                            <th scope="row"><?php echo esc_html( ucfirst( translate( $type, 'pcbdw' ) . ' ' . translate( $side, 'pcbdw' ) ) ); ?></th>
                             <td>
                                 <input type="number" step="any" name="<?php echo $key . '_value'; ?>" value="<?php echo esc_attr($val); ?>" style="width:80px;" />
                                 <select name="<?php echo $key . '_unit'; ?>">
@@ -79,10 +79,10 @@ function pcbdw_render_settings_page()
                     <?php endforeach; ?>
                 <?php endforeach; ?>
 
-                <tr><th colspan="2"><h2 style="margin:0;">Other styles</h2></th></tr>
+                <tr><th colspan="2"><h2 style="margin:0;"><?php esc_html_e( 'Other styles', 'pcbdw' ); ?></h2></th></tr>
 
                 <tr>
-                    <th scope="row">Max width</th>
+                    <th scope="row"><?php esc_html_e( 'Max width', 'pcbdw' ); ?></th>
                     <td>
                         <?php
                         $max_width_value = get_option('pcbdw_max_width_value', '');
@@ -98,7 +98,7 @@ function pcbdw_render_settings_page()
                 </tr>
 
                 <tr>
-                    <th scope="row">Background color</th>
+                    <th scope="row"><?php esc_html_e( 'Background color', 'pcbdw' ); ?></th>
                     <td>
                         <?php $bg_color = get_option('pcbdw_background_color', '#ffffff'); ?>
                         <input type="color" name="pcbdw_background_color" value="<?php echo esc_attr($bg_color); ?>" />
@@ -106,7 +106,7 @@ function pcbdw_render_settings_page()
                 </tr>
 
                 <tr>
-                    <th scope="row">Border</th>
+                    <th scope="row"><?php esc_html_e( 'Border', 'pcbdw' ); ?></th>
                     <td>
                         <?php
                         $border_width = get_option('pcbdw_border_width', '');
@@ -115,12 +115,12 @@ function pcbdw_render_settings_page()
                         <input type="number" name="pcbdw_border_width" value="<?php echo esc_attr($border_width); ?>" style="width:80px;" /> px
                         &nbsp;&nbsp;&nbsp;
                         <input type="color" name="pcbdw_border_color" value="<?php echo esc_attr($border_color); ?>" />
-                        <span style="margin-left:10px;">(solid)</span>
+                        <span style="margin-left:10px;"><?php esc_html_e( '(solid)', 'pcbdw' ); ?></span>
                     </td>
                 </tr>
 
                 <tr>
-                    <th scope="row">Border radius</th>
+                    <th scope="row"><?php esc_html_e( 'Border radius', 'pcbdw' ); ?></th>
                     <td>
                         <?php
                         $radius_val = get_option('pcbdw_border_radius_value', '');

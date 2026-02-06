@@ -26,7 +26,7 @@ function pcbdw_product_cat_custom_fields( $term, $taxonomy ) {
         <th scope="row" valign="top"></th>
         <td>
             <hr style="margin-bottom: 25px;">
-            <h3>Product categories bottom description for WooCommerce</h3>
+            <h3><?php esc_html_e( 'Product categories bottom description for WooCommerce', 'pcbdw' ); ?></h3>
         </td>
     </tr>
     <?php
@@ -37,14 +37,14 @@ function pcbdw_product_cat_custom_fields( $term, $taxonomy ) {
     }
     ?>
     <tr class="form-field">
-        <th scope="row" valign="top"><label for="woo_bottom_description_display_position">Where would you like to display the new product category description?</label></th>
+        <th scope="row" valign="top"><label for="woo_bottom_description_display_position"><?php esc_html_e( 'Where would you like to display the new product category description?', 'pcbdw' ); ?></label></th>
         <td>
             <select name="woo_bottom_description_display_position" id="woo_bottom_description_display_position">
-                <option value="woocommerce_before_main_content"<?php if($display_position=='woocommerce_before_main_content'){echo ' selected';} ?>>Before Product Category Title</option>
-                <option value="woocommerce_archive_description"<?php if($display_position=='woocommerce_archive_description'){echo ' selected';} ?>>After WooCommerce Product Description</option>
-                <option value="woocommerce_before_shop_loop"<?php if($display_position=='woocommerce_before_shop_loop'){echo ' selected';} ?>>Before products</option>
-                <option value="woocommerce_after_shop_loop"<?php if($display_position=='woocommerce_after_shop_loop'){echo ' selected';} ?>>After products (default)</option>
-                <option value="woocommerce_after_main_content"<?php if($display_position=='woocommerce_after_main_content'){echo ' selected';} ?>>After the main content</option>
+                <option value="woocommerce_before_main_content"<?php if($display_position=='woocommerce_before_main_content'){echo ' selected';} ?>><?php esc_html_e( 'Before Product Category Title', 'pcbdw' ); ?></option>
+                <option value="woocommerce_archive_description"<?php if($display_position=='woocommerce_archive_description'){echo ' selected';} ?>><?php esc_html_e( 'After WooCommerce Product Description', 'pcbdw' ); ?></option>
+                <option value="woocommerce_before_shop_loop"<?php if($display_position=='woocommerce_before_shop_loop'){echo ' selected';} ?>><?php esc_html_e( 'Before products', 'pcbdw' ); ?></option>
+                <option value="woocommerce_after_shop_loop"<?php if($display_position=='woocommerce_after_shop_loop'){echo ' selected';} ?>><?php esc_html_e( 'After products (default)', 'pcbdw' ); ?></option>
+                <option value="woocommerce_after_main_content"<?php if($display_position=='woocommerce_after_main_content'){echo ' selected';} ?>><?php esc_html_e( 'After the main content', 'pcbdw' ); ?></option>
             </select>
         </td>
     </tr>
@@ -68,10 +68,10 @@ function pcbdw_product_cat_custom_fields( $term, $taxonomy ) {
     $display_option = get_term_meta($term->term_id, 'woo_bottom_description_display_option', true);
     ?>
     <tr class="form-field">
-        <th scope="row" valign="top"><label for="display_option">Hide bottom description</label></th>
+        <th scope="row" valign="top"><label for="display_option"><?php esc_html_e( 'Hide bottom description', 'pcbdw' ); ?></label></th>
         <td>
             <input type="checkbox" name="woo_bottom_description_display_option" id="display_option" value="1" <?php checked($display_option, 1); ?> />
-            <label for="display_option">Check this option if you want to <u>hide</u> the bottom description on the category page.</label>
+            <label for="display_option"><?php esc_html_e( 'Check this option if you want to', 'pcbdw' ); ?> <u><?php esc_html_e( 'hide', 'pcbdw' ); ?></u> <?php esc_html_e( 'the bottom description on the category page.', 'pcbdw' ); ?></label>
             <br><hr style="margin-top: 25px;">
         </td>
     </tr>
