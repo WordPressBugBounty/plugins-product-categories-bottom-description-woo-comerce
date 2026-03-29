@@ -1,10 +1,11 @@
 <?php
 
 // Save all plugin fields
-add_action('create_product_cat', 'save_woo_bottom_description_display_option');
-add_action('edit_product_cat', 'save_woo_bottom_description_display_option');
-add_action('create_product_tag', 'save_woo_bottom_description_display_option');
-add_action('edit_product_tag', 'save_woo_bottom_description_display_option');
+add_action( 'create_product_cat', 'save_woo_bottom_description_display_option' );
+add_action( 'edit_product_cat', 'save_woo_bottom_description_display_option' );
+add_action( 'create_product_tag', 'save_woo_bottom_description_display_option' );
+add_action( 'edit_product_tag', 'save_woo_bottom_description_display_option' );
+
 function save_woo_bottom_description_display_option($term_id) {
 
     // Save the position where the product category description is displayed

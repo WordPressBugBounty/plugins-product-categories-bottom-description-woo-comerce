@@ -19,8 +19,10 @@ add_action('admin_menu', function () {
 /**
  * Register settings to store CSS options.
  */
-add_action('admin_init', function () {
+add_action('admin_init', 'pcbdw_register_settings');
+function pcbdw_register_settings() {
     $sides = ['top', 'right', 'bottom', 'left'];
+
     foreach (['margin', 'padding'] as $type) {
         foreach ($sides as $side) {
             register_setting('pcbdw_settings_group', "pcbdw_{$type}_{$side}_value");
@@ -37,7 +39,9 @@ add_action('admin_init', function () {
 
     register_setting('pcbdw_settings_group', 'pcbdw_border_radius_value');
     register_setting('pcbdw_settings_group', 'pcbdw_border_radius_unit');
-});
+
+    register_setting('pcbdw_settings_group', 'pcbdw_hidden_taxonomies');
+}
 
 
 
@@ -45,22 +49,81 @@ add_action('admin_init', function () {
  * Render plugin settings page with individual margin/padding controls and unit selectors,
  * plus max-width, background color, border and border-radius settings.
  */
-function pcbdw_render_settings_page()
-{
+function pcbdw_render_settings_page() {
     $fields = [
         'margin'  => ['Top', 'Right', 'Bottom', 'Left'],
         'padding' => ['Top', 'Right', 'Bottom', 'Left'],
     ];
+
     $units = ['px', 'em', 'rem', '%'];
+    $hidden_taxonomies = get_option('pcbdw_hidden_taxonomies', []);
+
+    if (!is_array($hidden_taxonomies)) {
+        $hidden_taxonomies = [];
+    }
     ?>
     <div class="wrap">
         <h1><?php esc_html_e( 'Bottom Description Settings', 'pcbdw' ); ?></h1>
+
         <form method="post" action="options.php">
             <?php settings_fields('pcbdw_settings_group'); ?>
+
             <table class="form-table">
+
+                <tr>
+                    <th colspan="2">
+                        <h2 style="margin:0;"><?php esc_html_e( 'Visibility by taxonomy', 'pcbdw' ); ?></h2>
+                        <p class="description" style="margin-top:10px;">
+                            <?php esc_html_e( 'These options prevent the bottom description from being loaded in the frontend for the selected WooCommerce taxonomies.', 'pcbdw' ); ?>
+                        </p>
+                    </th>
+                </tr>
+                <tr>
+                    <th scope="row"><?php esc_html_e( 'Hide bottom description in:', 'pcbdw' ); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="checkbox" name="pcbdw_hidden_taxonomies[]" value="product_cat" <?php checked(in_array('product_cat', $hidden_taxonomies, true)); ?> />
+                                <?php esc_html_e( 'Product categories', 'pcbdw' ); ?>
+                            </label>
+                            <br>
+
+                            <label>
+                                <input type="checkbox" name="pcbdw_hidden_taxonomies[]" value="product_tag" <?php checked(in_array('product_tag', $hidden_taxonomies, true)); ?> />
+                                <?php esc_html_e( 'Product tags', 'pcbdw' ); ?>
+                            </label>
+                            <br>
+
+                            <label>
+                                <input type="checkbox" name="pcbdw_hidden_taxonomies[]" value="product_brand" <?php checked(in_array('product_brand', $hidden_taxonomies, true)); ?> />
+                                <?php esc_html_e( 'Brands', 'pcbdw' ); ?>
+                            </label>
+                            <br>
+
+                            <label>
+                                <input type="checkbox" name="pcbdw_hidden_taxonomies[]" value="pa_all" <?php checked(in_array('pa_all', $hidden_taxonomies, true)); ?> />
+                                <?php esc_html_e( 'All attributes', 'pcbdw' ); ?>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+
+                <tr><td colspan="2"><hr style="margin:20px 0;"></td></tr>
+
+                <tr>
+                    <th colspan="2">
+                        <h2 style="margin:0;"><?php esc_html_e( 'Styles', 'pcbdw' ); ?></h2>
+                    </th>
+                </tr>
+
                 <?php foreach ($fields as $type => $sides): ?>
-                    <tr><th colspan="2"><h2 style="margin:0;"><?php echo esc_html( ucfirst( translate( $type, 'pcbdw' ) ) ); ?></h2></th></tr>
-                    <?php foreach ($sides as $side): 
+                    <tr>
+                        <th colspan="2">
+                            <h2 style="margin:0;"><?php echo esc_html( ucfirst( translate( $type, 'pcbdw' ) ) ); ?></h2>
+                        </th>
+                    </tr>
+
+                    <?php foreach ($sides as $side):
                         $key = "pcbdw_{$type}_" . strtolower($side);
                         $val = get_option($key . '_value', '');
                         $unit = get_option($key . '_unit', 'px');
@@ -68,10 +131,10 @@ function pcbdw_render_settings_page()
                         <tr>
                             <th scope="row"><?php echo esc_html( ucfirst( translate( $type, 'pcbdw' ) . ' ' . translate( $side, 'pcbdw' ) ) ); ?></th>
                             <td>
-                                <input type="number" step="any" name="<?php echo $key . '_value'; ?>" value="<?php echo esc_attr($val); ?>" style="width:80px;" />
-                                <select name="<?php echo $key . '_unit'; ?>">
+                                <input type="number" step="any" name="<?php echo esc_attr($key . '_value'); ?>" value="<?php echo esc_attr($val); ?>" style="width:80px;" />
+                                <select name="<?php echo esc_attr($key . '_unit'); ?>">
                                     <?php foreach ($units as $u): ?>
-                                        <option value="<?php echo $u; ?>" <?php selected($unit, $u); ?>><?php echo $u; ?></option>
+                                        <option value="<?php echo esc_attr($u); ?>" <?php selected($unit, $u); ?>><?php echo esc_html($u); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </td>
@@ -79,7 +142,11 @@ function pcbdw_render_settings_page()
                     <?php endforeach; ?>
                 <?php endforeach; ?>
 
-                <tr><th colspan="2"><h2 style="margin:0;"><?php esc_html_e( 'Other styles', 'pcbdw' ); ?></h2></th></tr>
+                <tr>
+                    <th colspan="2">
+                        <h2 style="margin:0;"><?php esc_html_e( 'Other styles', 'pcbdw' ); ?></h2>
+                    </th>
+                </tr>
 
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Max width', 'pcbdw' ); ?></th>
@@ -91,7 +158,7 @@ function pcbdw_render_settings_page()
                         <input type="number" step="any" name="pcbdw_max_width_value" value="<?php echo esc_attr($max_width_value); ?>" style="width:80px;" />
                         <select name="pcbdw_max_width_unit">
                             <?php foreach (['px', '%', 'em', 'rem'] as $unit): ?>
-                                <option value="<?php echo $unit; ?>" <?php selected($max_width_unit, $unit); ?>><?php echo $unit; ?></option>
+                                <option value="<?php echo esc_attr($unit); ?>" <?php selected($max_width_unit, $unit); ?>><?php echo esc_html($unit); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </td>
@@ -129,13 +196,14 @@ function pcbdw_render_settings_page()
                         <input type="number" step="any" name="pcbdw_border_radius_value" value="<?php echo esc_attr($radius_val); ?>" style="width:80px;" />
                         <select name="pcbdw_border_radius_unit">
                             <?php foreach (['px', '%', 'em', 'rem'] as $unit): ?>
-                                <option value="<?php echo $unit; ?>" <?php selected($radius_unit, $unit); ?>><?php echo $unit; ?></option>
+                                <option value="<?php echo esc_attr($unit); ?>" <?php selected($radius_unit, $unit); ?>><?php echo esc_html($unit); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </td>
                 </tr>
 
             </table>
+
             <?php submit_button(); ?>
         </form>
     </div>

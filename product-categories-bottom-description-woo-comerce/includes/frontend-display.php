@@ -5,24 +5,35 @@
  * If the category has products, use the user-selected hook.
  * If not, fall back to a hook that executes after the "no products found" message.
  */
-add_action('woocommerce_before_main_content', function () {
-
+add_action('woocommerce_before_main_content', 'pcbdw_maybe_hook_bottom_description', 5);
+function pcbdw_maybe_hook_bottom_description()
+{
     if (!is_tax() || is_paged()) {
         return;
     }
 
     $term = get_queried_object();
-    $display_position = get_term_meta($term->term_id, 'woo_bottom_description_display_position', true);
 
-    if (have_posts()) {
-        // Show description using the user-defined hook
-        add_action($display_position, 'pcbdw_product_cat_display_details_meta');
-    } else {
-        // Show description only if no products found
-        add_action('woocommerce_no_products_found', 'pcbdw_product_cat_display_details_meta');
+    if (!$term || empty($term->taxonomy) || !pcbdw_is_supported_taxonomy($term->taxonomy)) {
+        return;
     }
 
-}, 5);
+    if (pcbdw_is_taxonomy_globally_hidden($term->taxonomy)) {
+        return;
+    }
+
+    $display_position = get_term_meta($term->term_id, 'woo_bottom_description_display_position', true);
+
+    if (!$display_position) {
+        $display_position = 'woocommerce_after_shop_loop';
+    }
+
+    if (have_posts()) {
+        add_action($display_position, 'pcbdw_product_cat_display_details_meta');
+    } else {
+        add_action('woocommerce_no_products_found', 'pcbdw_product_cat_display_details_meta');
+    }
+}
 
 
 /**
@@ -32,41 +43,64 @@ add_action('woocommerce_before_main_content', function () {
 function pcbdw_product_cat_display_details_meta()
 {
     $term = get_queried_object();
-    $display_option = get_term_meta($term->term_id, 'woo_bottom_description_display_option', true);
-    $checked = ($display_option === '1') ? 'checked' : '';
 
-    if (!$checked) {
-        $details = get_term_meta($term->term_id, 'details', true);
-        $formatted_details = wpautop($details);
-
-        if ('' !== $details) {
-            echo '<div class="pcbdw-bottom-description-content">';
-            echo apply_filters('the_content', wp_kses_post($formatted_details));
-            echo '</div>';
-        }
+    if (!$term || empty($term->taxonomy) || pcbdw_is_taxonomy_globally_hidden($term->taxonomy)) {
+        return;
     }
+
+    $display_option = get_term_meta($term->term_id, 'woo_bottom_description_display_option', true);
+
+    if ($display_option === '1') {
+        return;
+    }
+
+    $details = get_term_meta($term->term_id, 'details', true);
+
+    if ('' === $details) {
+        return;
+    }
+
+    echo '<div class="pcbdw-bottom-description-content">';
+    echo apply_filters('the_content', wp_kses_post(wpautop($details)));
+    echo '</div>';
 }
 
 
 /**
  * Output custom CSS styles in the frontend based on saved plugin options.
  */
-add_action('wp_enqueue_scripts', function () {
-    if (!is_tax('product_cat')) return;
+add_action( 'wp_enqueue_scripts', 'pcbdw_enqueue_frontend_styles' );
+function pcbdw_enqueue_frontend_styles()
+{
+    if (!is_tax()) {
+        return;
+    }
 
-    wp_enqueue_style('pcbdw-custom-style', plugins_url('../assets/css/style.css', __FILE__), [], false, 'all');
+    $term = get_queried_object();
 
+    if (!$term || empty($term->taxonomy) || !pcbdw_is_supported_taxonomy($term->taxonomy)) {
+        return;
+    }
+
+    if (pcbdw_is_taxonomy_globally_hidden($term->taxonomy)) {
+        return;
+    }
+
+    wp_register_style('pcbdw-custom-style', false, [], false);
+    wp_enqueue_style('pcbdw-custom-style');
 
     $sides = ['top', 'right', 'bottom', 'left'];
     $css = '';
 
     foreach (['margin', 'padding'] as $type) {
         $values = [];
+
         foreach ($sides as $side) {
             $val = get_option("pcbdw_{$type}_{$side}_value", '');
             $unit = get_option("pcbdw_{$type}_{$side}_unit", 'px');
             $values[] = $val !== '' ? "{$val}{$unit}" : '0';
         }
+
         $css .= "{$type}: " . implode(' ', $values) . "; ";
     }
 
@@ -94,4 +128,24 @@ add_action('wp_enqueue_scripts', function () {
     $final_css = ".pcbdw-bottom-description-content { {$css} }";
 
     wp_add_inline_style('pcbdw-custom-style', $final_css);
-});
+}
+
+
+// Check if a taxonomy is globally hidden based on plugin settings
+function pcbdw_is_taxonomy_globally_hidden($taxonomy) {
+    $hidden_taxonomies = get_option('pcbdw_hidden_taxonomies', []);
+
+    if (!is_array($hidden_taxonomies) || empty($taxonomy)) {
+        return false;
+    }
+
+    if (in_array($taxonomy, $hidden_taxonomies, true)) {
+        return true;
+    }
+
+    if (strpos($taxonomy, 'pa_') === 0 && in_array('pa_all', $hidden_taxonomies, true)) {
+        return true;
+    }
+
+    return false;
+}
